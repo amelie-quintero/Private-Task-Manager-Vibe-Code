@@ -45,3 +45,15 @@ async function loadVault() {
     };
   });
 }
+
+function vaultExists() {
+  return new Promise((resolve) => {
+    const tx = db.transaction(STORE, "readonly");
+
+    const req = tx.objectStore(STORE).get("tasks");
+
+    req.onsuccess = () => {
+      resolve(!!req.result);
+    };
+  });
+}

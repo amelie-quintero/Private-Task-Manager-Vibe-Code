@@ -61,16 +61,55 @@ window.removeTask = (id) => {
   refresh();
 };
 
+const title = document.getElementById("lockTitle");
+const confirmInput = document.getElementById("passwordConfirm");
+const hint = document.getElementById("lockHint");
+
 document.getElementById("unlockBtn").onclick = async () => {
   const pass = document.getElementById("passwordInput").value;
+  const confirm = confirmInput.value;
 
   await deriveKey(pass);
-
   await initDB();
 
-  tasks = await loadVault();
+  const exists = await vaultExists();
 
-  document.getElementById("lockScreen").style.display = "none";
+  // FIRST RUN → CREATE PASSWORD
+  if (!exists) {
+    title.innerText = "Create Passphrase";
 
-  render();
+    confirmInput.style.display = "block";
+
+    if (!confirm) {
+      hint.innerText = "Confirm your password";
+      return;
+    }
+
+    if (pass !== confirm) {
+      hint.innerText = "Passwords do not match";
+      return;
+    }
+
+    tasks = [];
+
+    await saveVault(tasks);
+
+    document.getElementById("lockScreen").style.display = "none";
+
+    render();
+
+    return;
+  }
+
+  // NORMAL UNLOCK
+
+  try {
+    tasks = await loadVault();
+
+    document.getElementById("lockScreen").style.display = "none";
+
+    render();
+  } catch (e) {
+    hint.innerText = "Incorrect password";
+  }
 };

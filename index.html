@@ -37,11 +37,24 @@
 
     <div id="lockScreen">
       <div class="unlock">
-        <h2>Unlock Tasks</h2>
+        <h2 id="lockTitle">Unlock Tasks</h2>
 
-        <input type="password" id="passwordInput" placeholder="Passphrase" />
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="Enter passphrase"
+        />
+
+        <input
+          type="password"
+          id="passwordConfirm"
+          placeholder="Confirm passphrase"
+          style="display: none"
+        />
 
         <button id="unlockBtn">Unlock</button>
+
+        <p id="lockHint"></p>
       </div>
     </div>
 
