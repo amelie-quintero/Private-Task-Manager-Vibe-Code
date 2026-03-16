@@ -30,19 +30,34 @@
             autocomplete="off"
           />
 
+          <input type="date" id="dueDateInput" class="glass-input" />
+
+          <input
+            id="tagInput"
+            placeholder="tags (comma separated)"
+            class="glass-input"
+          />
+
+          <button id="addTaskBtn">Add</button>
+
           <button id="resetVaultMain" class="danger-btn">Reset Vault</button>
         </header>
+
+        <input
+          id="searchInput"
+          placeholder="Search tasks..."
+          class="search-bar"
+        />
 
         <ul id="taskList"></ul>
       </main>
     </div>
 
     <div id="lockScreen">
-
       <button id="resetVaultUnlock" class="danger-btn reset-corner">
         Reset Vault
       </button>
-      
+
       <div class="unlock">
         <h2 id="lockTitle">Unlock Tasks</h2>
 

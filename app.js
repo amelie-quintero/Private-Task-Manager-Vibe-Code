@@ -2,6 +2,10 @@ let tasks = [];
 
 const list = document.getElementById("taskList");
 
+if ("Notification" in window) {
+  Notification.requestPermission();
+}
+
 async function refresh() {
   render(tasks);
 
@@ -11,32 +15,92 @@ async function refresh() {
 function render() {
   list.innerHTML = "";
 
-  tasks.forEach((t) => {
-    const li = document.createElement("li");
+  let filtered = tasks;
 
-    if (t.completed) li.classList.add("completed");
+  if (currentSearch) {
+    filtered = tasks.filter(
+      (t) =>
+        t.text.toLowerCase().includes(currentSearch) ||
+        t.tags.join(" ").toLowerCase().includes(currentSearch),
+    );
+  }
 
-    li.innerHTML = `
-        <span>${t.text}</span>
-        <div class="task-actions">
-            <button onclick="toggle('${t.id}')">✓</button>
-            <button onclick="removeTask('${t.id}')">✕</button>
-        </div>
-        `;
-
-    list.appendChild(li);
-  });
+  filtered.forEach((t) => renderTask(t));
 }
 
-function addTask(text) {
+function renderTask(t) {
+  const li = document.createElement("li");
+
+  if (t.completed) li.classList.add("completed");
+
+  const tagsHTML = t.tags
+    .map((tag) => `<span class="tag">${tag}</span>`)
+    .join("");
+
+  const dueHTML = t.due ? `<span class="due">${t.due}</span>` : "";
+
+  li.innerHTML = `
+    <div class="task-left">
+      <span class="task-text">${t.text}</span>
+      <div class="task-meta">
+        ${dueHTML}
+        ${tagsHTML}
+      </div>
+    </div>
+    <div class="task-actions">
+      <button onclick="toggle('${t.id}')">✓</button>
+      <button onclick="removeTask('${t.id}')">✕</button>
+    </div>
+    `;
+
+  list.appendChild(li);
+}
+
+document.getElementById("addTaskBtn").onclick = () => {
+  const text = taskInput.value.trim();
+
+  if (!text) return;
+
+  const due = dueDateInput.value || null;
+
+  const tags = tagInput.value
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  addTask(text, due, tags);
+
+  taskInput.value = "";
+  tagInput.value = "";
+  dueDateInput.value = "";
+};
+
+function addTask(text, dueDate, tags) {
   tasks.unshift({
     id: crypto.randomUUID(),
-    text,
+    text: text,
     completed: false,
     created: Date.now(),
+    due: dueDate || null,
+    tags: tags || [],
+    reminder: null,
   });
 
   refresh();
+}
+
+function scheduleReminder(task) {
+  if (!task.reminder) return;
+
+  const delay = new Date(task.reminder).getTime() - Date.now();
+
+  if (delay <= 0) return;
+
+  setTimeout(() => {
+    new Notification("Task Reminder", {
+      body: task.text,
+    });
+  }, delay);
 }
 
 document.getElementById("taskInput").addEventListener("keydown", (e) => {
@@ -115,6 +179,7 @@ document.getElementById("unlockBtn").onclick = async () => {
   try {
     tasks = await loadVault();
 
+    tasks.forEach(scheduleReminder);
     document.getElementById("lockScreen").style.display = "none";
 
     render();
@@ -138,3 +203,13 @@ async function resetVault() {
 document.getElementById("resetVaultUnlock").onclick = resetVault;
 
 document.getElementById("resetVaultMain").onclick = resetVault;
+
+const searchInput = document.getElementById("searchInput");
+
+let currentSearch = "";
+
+searchInput.addEventListener("input", (e) => {
+  currentSearch = e.target.value.toLowerCase();
+
+  render();
+});
