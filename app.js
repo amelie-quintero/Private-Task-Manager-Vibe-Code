@@ -84,6 +84,7 @@ async function startApp() {
   }
 }
 
+console.log("Starting App");
 startApp();
 
 document.getElementById("unlockBtn").onclick = async () => {
