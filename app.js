@@ -61,30 +61,43 @@ window.removeTask = (id) => {
   refresh();
 };
 
+let firstRun = false;
+
 const title = document.getElementById("lockTitle");
 const confirmInput = document.getElementById("passwordConfirm");
 const hint = document.getElementById("lockHint");
+const passwordInput = document.getElementById("passwordInput");
 
-document.getElementById("unlockBtn").onclick = async () => {
-  const pass = document.getElementById("passwordInput").value;
-  const confirm = confirmInput.value;
-
-  await deriveKey(pass);
+async function startApp() {
   await initDB();
 
   const exists = await vaultExists();
 
-  // FIRST RUN → CREATE PASSWORD
   if (!exists) {
+    firstRun = true;
+
     title.innerText = "Create Passphrase";
 
     confirmInput.style.display = "block";
 
-    if (!confirm) {
-      hint.innerText = "Confirm your password";
-      return;
-    }
+    hint.innerText = "Set a password to protect your tasks";
+  }
+}
 
+startApp();
+
+document.getElementById("unlockBtn").onclick = async () => {
+  const pass = passwordInput.value;
+  const confirm = confirmInput.value;
+
+  if (!pass) {
+    hint.innerText = "Enter a passphrase";
+    return;
+  }
+
+  await deriveKey(pass);
+
+  if (firstRun) {
     if (pass !== confirm) {
       hint.innerText = "Passwords do not match";
       return;
@@ -100,8 +113,6 @@ document.getElementById("unlockBtn").onclick = async () => {
 
     return;
   }
-
-  // NORMAL UNLOCK
 
   try {
     tasks = await loadVault();
