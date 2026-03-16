@@ -293,9 +293,11 @@ li:hover {
 .main-header {
   display: flex;
 
-  gap: 16px;
+  gap: 12px;
 
   align-items: center;
+
+  flex-wrap: wrap;
 }
 
 .main-header input {
