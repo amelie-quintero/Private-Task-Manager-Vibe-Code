@@ -122,3 +122,19 @@ document.getElementById("unlockBtn").onclick = async () => {
     hint.innerText = "Incorrect password";
   }
 };
+
+async function resetVault() {
+  const confirmReset = confirm(
+    "This will permanently delete all encrypted tasks. Continue?",
+  );
+
+  if (!confirmReset) return;
+
+  await indexedDB.deleteDatabase("todoDB");
+
+  location.reload();
+}
+
+document.getElementById("resetVaultUnlock").onclick = resetVault;
+
+document.getElementById("resetVaultMain").onclick = resetVault;

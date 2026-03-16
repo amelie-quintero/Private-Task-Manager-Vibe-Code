@@ -263,3 +263,49 @@ li:hover {
 
   box-shadow: none;
 }
+
+.danger-btn {
+  background: rgba(239, 68, 68, 0.15);
+
+  color: #f87171;
+
+  border: 1px solid rgba(239, 68, 68, 0.35);
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  transition: 0.15s;
+
+  backdrop-filter: blur(10px);
+}
+
+.danger-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+
+  transform: translateY(-1px);
+}
+
+.main-header {
+  display: flex;
+
+  gap: 16px;
+
+  align-items: center;
+}
+
+.main-header input {
+  flex: 1;
+}
+
+.reset-corner {
+  position: absolute;
+
+  top: 20px;
+
+  right: 20px;
+}

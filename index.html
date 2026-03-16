@@ -23,12 +23,14 @@
       </aside>
 
       <main>
-        <header>
+        <header class="main-header">
           <input
             id="taskInput"
             placeholder="Add a task..."
             autocomplete="off"
           />
+
+          <button id="resetVaultMain" class="danger-btn">Reset Vault</button>
         </header>
 
         <ul id="taskList"></ul>
@@ -36,6 +38,11 @@
     </div>
 
     <div id="lockScreen">
+
+      <button id="resetVaultUnlock" class="danger-btn reset-corner">
+        Reset Vault
+      </button>
+      
       <div class="unlock">
         <h2 id="lockTitle">Unlock Tasks</h2>
 
