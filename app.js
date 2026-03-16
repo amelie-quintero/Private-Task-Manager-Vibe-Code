@@ -70,9 +70,7 @@ const passwordInput = document.getElementById("passwordInput");
 
 async function startApp() {
   await initDB();
-  console.log("db obtained");
   const exists = await vaultExists();
-  console.log("vault exists: " + !exists);
   if (!exists) {
     firstRun = true;
 
@@ -84,7 +82,6 @@ async function startApp() {
   }
 }
 
-console.log("Starting App");
 startApp();
 
 document.getElementById("unlockBtn").onclick = async () => {

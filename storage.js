@@ -4,18 +4,23 @@ const STORE = "vault";
 let db;
 
 function initDB() {
-  return new Promise((res) => {
-    const req = indexedDB.open(DB, 1);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB, 2);
 
     req.onupgradeneeded = (e) => {
       db = e.target.result;
-      db.createObjectStore(STORE, { keyPath: "id" });
+
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE, { keyPath: "id" });
+      }
     };
 
     req.onsuccess = (e) => {
       db = e.target.result;
-      res();
+      resolve();
     };
+
+    req.onerror = reject;
   });
 }
 
