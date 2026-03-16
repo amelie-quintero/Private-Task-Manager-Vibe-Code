@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Private Tasks</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css" />
+
+    <meta name="theme-color" content="#111" />
+  </head>
+
+  <body>
+    <header>
+      <h1>🌿 Private Tasks</h1>
+
+      <div class="controls">
+        <input id="taskInput" placeholder="Add a task..." />
+        <button id="addBtn">Add</button>
+      </div>
+    </header>
+
+    <main>
+      <ul id="taskList"></ul>
+    </main>
+
+    <footer>
+      <button id="exportBtn">Export</button>
+      <button id="importBtn">Import</button>
+      <input type="file" id="importFile" hidden />
+    </footer>
+
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
