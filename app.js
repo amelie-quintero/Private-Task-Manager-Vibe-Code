@@ -1,10 +1,15 @@
-const input = document.getElementById("taskInput");
+let tasks = [];
+
 const list = document.getElementById("taskList");
 
-const render = (tasks) => {
-  list.innerHTML = "";
+async function refresh() {
+  render(tasks);
 
-  tasks.sort((a, b) => b.created - a.created);
+  await saveVault(tasks);
+}
+
+function render() {
+  list.innerHTML = "";
 
   tasks.forEach((t) => {
     const li = document.createElement("li");
@@ -12,74 +17,60 @@ const render = (tasks) => {
     if (t.completed) li.classList.add("completed");
 
     li.innerHTML = `
-
-<span class="task-text">${t.text}</span>
-
-<div class="task-actions">
-
-<button class="task-btn" onclick="toggle('${t.id}')">✓</button>
-
-<button class="task-btn" onclick="removeTask('${t.id}')">✕</button>
-
-</div>
-
-`;
+        <span>${t.text}</span>
+        <div class="task-actions">
+            <button onclick="toggle('${t.id}')">✓</button>
+            <button onclick="removeTask('${t.id}')">✕</button>
+        </div>
+        `;
 
     list.appendChild(li);
   });
-};
+}
 
-const refresh = async () => {
-  const tasks = await getTasks();
-  render(tasks);
-};
-
-const addTask = () => {
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  saveTask({
+function addTask(text) {
+  tasks.unshift({
     id: crypto.randomUUID(),
-
     text,
-
     completed: false,
-
     created: Date.now(),
   });
 
-  input.value = "";
-
   refresh();
-};
+}
 
-document.getElementById("addBtn").onclick = addTask;
+document.getElementById("taskInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    addTask(e.target.value);
 
-input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") addTask();
+    e.target.value = "";
+  }
 });
 
-window.toggle = async (id) => {
-  const tasks = await getTasks();
+window.toggle = (id) => {
+  const t = tasks.find((x) => x.id === id);
 
-  const task = tasks.find((t) => t.id === id);
-
-  task.completed = !task.completed;
-
-  saveTask(task);
+  t.completed = !t.completed;
 
   refresh();
 };
 
 window.removeTask = (id) => {
-  deleteTask(id);
+  tasks = tasks.filter((t) => t.id !== id);
 
   refresh();
 };
 
-initDB().then(refresh);
+document.getElementById("unlockBtn").onclick = async () => {
+  const pass = document.getElementById("passwordInput").value;
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
+  await deriveKey(pass);
+
+  await initDB();
+
+  tasks = await loadVault();
+
+  document.getElementById("lockScreen").style.display = "none";
+
+  render();
+};

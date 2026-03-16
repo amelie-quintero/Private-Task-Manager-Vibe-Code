@@ -1,11 +1,11 @@
-const DB_NAME = "todoDB";
-const STORE = "tasks";
+const DB = "todoDB";
+const STORE = "vault";
 
 let db;
 
-const initDB = () =>
-  new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
+function initDB() {
+  return new Promise((res) => {
+    const req = indexedDB.open(DB, 1);
 
     req.onupgradeneeded = (e) => {
       db = e.target.result;
@@ -14,28 +14,34 @@ const initDB = () =>
 
     req.onsuccess = (e) => {
       db = e.target.result;
-      resolve();
+      res();
     };
-
-    req.onerror = reject;
   });
+}
 
-const getTasks = () =>
-  new Promise((res) => {
+async function saveVault(data) {
+  const encrypted = await encrypt(data);
+
+  const tx = db.transaction(STORE, "readwrite");
+
+  tx.objectStore(STORE).put({
+    id: "tasks",
+    payload: encrypted,
+  });
+}
+
+async function loadVault() {
+  return new Promise((resolve) => {
     const tx = db.transaction(STORE, "readonly");
-    const store = tx.objectStore(STORE);
 
-    const req = store.getAll();
+    const req = tx.objectStore(STORE).get("tasks");
 
-    req.onsuccess = () => res(req.result);
+    req.onsuccess = async () => {
+      if (!req.result) return resolve([]);
+
+      const decrypted = await decrypt(req.result.payload);
+
+      resolve(decrypted);
+    };
   });
-
-const saveTask = (task) => {
-  const tx = db.transaction(STORE, "readwrite");
-  tx.objectStore(STORE).put(task);
-};
-
-const deleteTask = (id) => {
-  const tx = db.transaction(STORE, "readwrite");
-  tx.objectStore(STORE).delete(id);
-};
+}

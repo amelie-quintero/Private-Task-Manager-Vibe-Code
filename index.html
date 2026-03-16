@@ -2,42 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
     <title>Private Tasks</title>
 
-    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="styles.css" />
-
-    <meta name="theme-color" content="#0f172a" />
+    <link rel="manifest" href="manifest.json" />
   </head>
 
   <body>
-    <div class="app">
-      <header>
-        <h1>Private Tasks</h1>
-        <p class="subtitle">Your tasks. Your device.</p>
-      </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>Tasks</h2>
 
-      <div class="task-input">
-        <input
-          id="taskInput"
-          placeholder="Add a task and press Enter…"
-          autocomplete="off"
-        />
+        <nav>
+          <button data-filter="all">Inbox</button>
+          <button data-filter="today">Today</button>
+          <button data-filter="completed">Completed</button>
+        </nav>
+      </aside>
 
-        <button id="addBtn">Add</button>
-      </div>
+      <main>
+        <header>
+          <input
+            id="taskInput"
+            placeholder="Add a task..."
+            autocomplete="off"
+          />
+        </header>
 
-      <ul id="taskList"></ul>
-
-      <footer>
-        <button id="exportBtn">Export</button>
-        <button id="importBtn">Import</button>
-        <input type="file" id="importFile" hidden />
-      </footer>
+        <ul id="taskList"></ul>
+      </main>
     </div>
 
+    <div id="lockScreen">
+      <div class="unlock">
+        <h2>Unlock Tasks</h2>
+
+        <input type="password" id="passwordInput" placeholder="Passphrase" />
+
+        <button id="unlockBtn">Unlock</button>
+      </div>
+    </div>
+
+    <script src="crypto.js"></script>
     <script src="storage.js"></script>
     <script src="app.js"></script>
   </body>
